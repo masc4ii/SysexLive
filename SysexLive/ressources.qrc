@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/IMG">
+        <file>IMG/Mail-icon.png</file>
+        <file>IMG/Search-icon.png</file>
+        <file>IMG/Delete-icon.png</file>
+        <file>IMG/File-New-icon.png</file>
+        <file>IMG/Folder-Open-icon.png</file>
+        <file>IMG/Save-icon.png</file>
+        <file>IMG/Arrow-Down-icon.png</file>
+        <file>IMG/Arrow-Up-icon.png</file>
+        <file>IMG/Window-Add-icon.png</file>
+        <file>IMG/SysexLive.png</file>
+    </qresource>
+</RCC>
