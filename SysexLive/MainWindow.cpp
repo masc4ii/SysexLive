@@ -129,12 +129,14 @@ void MainWindow::on_actionAboutSysexLive_triggered()
                                   " <p>%1 v%2</p>"
                                   " <p>%3</p>"
                                   " <p>See <a href='%4'>this site</a> for more information.</p>"
-                                  " <p>Some icons by <a href='%5'>Double-J Design</a> under <a href='%6'>CC4.0</a></p>"
+                                  " <p>Darkstyle Copyright (c) 2017, <a href='%5'>Juergen Skrotzky</a></p>"
+                                  " <p>Icons by <a href='%6'>Double-J Design</a> under <a href='%7'>CC4.0</a></p>"
                                   " </body></html>" )
                                  .arg( APPNAME )
                                  .arg( VERSION )
                                  .arg( "by masc." )
-                                 .arg( "https://github.com/masc4ii/..." )
+                                 .arg( "https://github.com/masc4ii/SysexLive" )
+                                 .arg( "https://github.com/Jorgen-VikingGod" )
                                  .arg( "http://www.doublejdesign.co.uk/" )
                                  .arg( "https://creativecommons.org/licenses/by/4.0/" ) );
 }
@@ -257,6 +259,7 @@ void MainWindow::on_actionOpen_triggered()
     if( fileName.count() == 0 ) return;
 
     m_recentFilesMenu->addRecentFile( fileName );
+    m_lastSaveFileName = fileName;
 
     //Delete all
     on_actionNew_triggered();
@@ -357,6 +360,7 @@ void MainWindow::on_actionSave_triggered()
     if( fileName.count() == 0 ) return;
 
     m_recentFilesMenu->addRecentFile( fileName );
+    m_lastSaveFileName = fileName;
 
     QFile file(fileName);
     file.open(QIODevice::WriteOnly);
