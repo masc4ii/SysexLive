@@ -54,12 +54,17 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
     connect( m_recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(loadFile(const QString &)) );
     ui->menuFile->insertMenu( ui->actionSave, m_recentFilesMenu );
+
+    //Keyfilter on Table
+    m_eventFilter = new EventReturnFilter( this );
+    ui->tableWidget->installEventFilter( m_eventFilter );
 }
 
 //Destructor
 MainWindow::~MainWindow()
 {
     writeSettings();
+    delete m_eventFilter;
     delete m_midiOut;
     delete ui;
 }

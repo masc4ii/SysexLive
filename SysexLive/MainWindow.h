@@ -13,6 +13,7 @@
 #include "qmidimapper.h"
 #include <QTableWidget>
 #include <QRecentFilesMenu.h>
+#include "EventReturnFilter.h"
 
 namespace Ui {
 class MainWindow;
@@ -58,6 +59,7 @@ private:
     QString m_synth1;
     QString m_synth2;
     QMidiOut *m_midiOut;
+    EventReturnFilter *m_eventFilter;
 };
 
 #endif // MAINWINDOW_H

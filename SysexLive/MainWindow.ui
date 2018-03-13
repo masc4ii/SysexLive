@@ -293,7 +293,7 @@
     <string>Send Patches</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+.</string>
+    <string>Return</string>
    </property>
   </action>
  </widget>

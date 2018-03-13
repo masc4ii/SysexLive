@@ -26,12 +26,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         MainWindow.cpp \
-    QRecentFilesMenu.cpp
+    QRecentFilesMenu.cpp \
+    EventReturnFilter.cpp
 
 HEADERS += \
         MainWindow.h \
     DarkStyle.h \
-    QRecentFilesMenu.h
+    QRecentFilesMenu.h \
+    EventReturnFilter.h
 
 FORMS += \
         MainWindow.ui
