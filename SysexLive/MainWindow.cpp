@@ -512,9 +512,18 @@ void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentCo
     Q_UNUSED( currentColumn );
     Q_UNUSED( previousRow );
     Q_UNUSED( previousColumn );
-    ui->plainTextEdit->blockSignals( true );
-    ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 5 )->text() );
-    ui->plainTextEdit->blockSignals( false );
+    if( currentRow < 0 )
+    {
+        ui->plainTextEdit->setPlainText( QString( "" ) );
+        ui->plainTextEdit->setEnabled( false );
+    }
+    else
+    {
+        ui->plainTextEdit->blockSignals( true );
+        ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 5 )->text() );
+        ui->plainTextEdit->blockSignals( false );
+        ui->plainTextEdit->setEnabled( true );
+    }
 }
 
 //Zoom Text +
