@@ -509,6 +509,9 @@ void MainWindow::on_plainTextEdit_textChanged()
 //Current cell changed
 void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
 {
+    Q_UNUSED( currentColumn );
+    Q_UNUSED( previousRow );
+    Q_UNUSED( previousColumn );
     ui->plainTextEdit->blockSignals( true );
     ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 5 )->text() );
     ui->plainTextEdit->blockSignals( false );
