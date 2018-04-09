@@ -43,6 +43,10 @@ private slots:
     void on_actionMoveUp_triggered();
     void on_actionMoveDown_triggered();
     void loadFile(const QString &fileName);
+    void on_plainTextEdit_textChanged();
+    void on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void on_actionZoomTextPlus_triggered();
+    void on_actionZoomTextMinus_triggered();
 
 private:
     Ui::MainWindow *ui;

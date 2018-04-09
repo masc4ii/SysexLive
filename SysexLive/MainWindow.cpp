@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_lastSaveFileName = QDir::homePath();
 
+    ui->plainTextEdit->setEnabled( false );
+
     //AutoResize for table columns
 #if QT_VERSION >= 0x050000
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -159,9 +161,10 @@ void MainWindow::on_actionAddEntry_triggered()
     for( int i = 0; i < ui->tableWidget->columnCount(); i++ )
     {
         QTableWidgetItem *item = new QTableWidgetItem( "" );
-        if( i > 0 ) item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        if( i > 0 && i < 5 ) item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         ui->tableWidget->setItem( ui->tableWidget->rowCount()-1, i, item );
     }
+    ui->plainTextEdit->setEnabled( true );
 }
 
 //Delete current entry in table
@@ -250,6 +253,7 @@ void MainWindow::on_actionNew_triggered()
     {
         ui->tableWidget->removeRow( 0 );
     }
+    ui->plainTextEdit->setEnabled( false );
 }
 
 //Open table
@@ -333,6 +337,12 @@ void MainWindow::loadFile(const QString & fileName)
                             ui->tableWidget->item( ui->tableWidget->rowCount()-1, 4 )->setText( QFileInfo( fileName ).fileName() );
                             Rxml.readNext();
                         }
+                        else if( Rxml.isStartElement() && Rxml.name() == "info" )
+                        {
+                            QString text = Rxml.readElementText();
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 5 )->setText( text );
+                            Rxml.readNext();
+                        }
                         else if( Rxml.isStartElement() ) //future features
                         {
                             Rxml.readElementText();
@@ -384,6 +394,7 @@ void MainWindow::on_actionSave_triggered()
         xmlWriter.writeAttribute( "name", ui->tableWidget->item(i, 0)->text() );
         xmlWriter.writeTextElement( "synth1", ui->tableWidget->item(i, 1)->text() );
         xmlWriter.writeTextElement( "synth2", ui->tableWidget->item(i, 2)->text() );
+        xmlWriter.writeTextElement( "info", ui->tableWidget->item(i, 5)->text() );
         xmlWriter.writeEndElement();
     }
     xmlWriter.writeEndElement();
@@ -441,8 +452,12 @@ void MainWindow::readSettings()
 {
     QSettings set( QSettings::UserScope, "masc.SysexLive", "SysexLive" );
     restoreGeometry( set.value( "mainWindowGeometry" ).toByteArray() );
+    ui->splitter->restoreState( set.value( "splitterState" ).toByteArray() );
     m_lastSaveFileName = set.value( "lastFileName", QDir::homePath() ).toString();
     m_recentFilesMenu->restoreState( set.value( "recentFiles" ).toByteArray() );
+    QFont font = ui->plainTextEdit->font();
+    font.setPointSize( set.value( "fontSize", font.pointSize() ).toInt() );
+    ui->plainTextEdit->setFont( font );
 }
 
 //Write registry settings
@@ -450,8 +465,10 @@ void MainWindow::writeSettings()
 {
     QSettings set( QSettings::UserScope, "masc.SysexLive", "SysexLive" );
     set.setValue( "mainWindowGeometry", saveGeometry() );
+    set.setValue( "splitterState", ui->splitter->saveState() );
     set.setValue( "lastFileName", m_lastSaveFileName );
     set.setValue( "recentFiles", m_recentFilesMenu->saveState() );
+    set.setValue( "fontSize", ui->plainTextEdit->font().pointSize() );
 }
 
 //Take row (for move)
@@ -472,4 +489,43 @@ void MainWindow::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
     {
         ui->tableWidget->setItem(row, col, rowItems.at(col));
     }
+}
+
+//Write accords from Edit to Table
+void MainWindow::on_plainTextEdit_textChanged()
+{
+    if( ui->tableWidget->currentRow() >= 0 )
+    {
+        ui->tableWidget->item( ui->tableWidget->currentRow(), 5 )->setText( ui->plainTextEdit->toPlainText() );
+    }
+    else
+    {
+        ui->plainTextEdit->blockSignals( true );
+        ui->plainTextEdit->setPlainText( "" );
+        ui->plainTextEdit->blockSignals( false );
+    }
+}
+
+//Current cell changed
+void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+    ui->plainTextEdit->blockSignals( true );
+    ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 5 )->text() );
+    ui->plainTextEdit->blockSignals( false );
+}
+
+//Zoom Text +
+void MainWindow::on_actionZoomTextPlus_triggered()
+{
+    QFont font = ui->plainTextEdit->font();
+    font.setPointSize( font.pointSize() + 1 );
+    ui->plainTextEdit->setFont( font );
+}
+
+//Zoom Text -
+void MainWindow::on_actionZoomTextMinus_triggered()
+{
+    QFont font = ui->plainTextEdit->font();
+    font.setPointSize( font.pointSize() - 1 );
+    ui->plainTextEdit->setFont( font );
 }

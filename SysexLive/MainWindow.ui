@@ -66,41 +66,52 @@
      </layout>
     </item>
     <item row="1" column="0">
-     <widget class="QTableWidget" name="tableWidget">
-      <attribute name="horizontalHeaderCascadingSectionResizes">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>150</number>
-      </attribute>
-      <attribute name="horizontalHeaderStretchLastSection">
-       <bool>false</bool>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>Song Registry Name</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>FullName 1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>FullName 2</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Synth 1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Synth 2</string>
-       </property>
-      </column>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QTableWidget" name="tableWidget">
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>150</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Song Registry Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>FullName 1</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>FullName 2</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Synth 1</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Synth 2</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Info</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPlainTextEdit" name="plainTextEdit"/>
      </widget>
     </item>
    </layout>
@@ -137,6 +148,9 @@
     <addaction name="actionSearchInterfaces"/>
     <addaction name="separator"/>
     <addaction name="actionSendPatches"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoomTextPlus"/>
+    <addaction name="actionZoomTextMinus"/>
    </widget>
    <widget class="QMenu" name="menuInfo">
     <property name="title">
@@ -294,6 +308,22 @@
    </property>
    <property name="shortcut">
     <string>Return</string>
+   </property>
+  </action>
+  <action name="actionZoomTextPlus">
+   <property name="text">
+    <string>Zoom Text +</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionZoomTextMinus">
+   <property name="text">
+    <string>Zoom Text -</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>
