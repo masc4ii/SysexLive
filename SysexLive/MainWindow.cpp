@@ -270,9 +270,6 @@ void MainWindow::on_actionOpen_triggered()
     m_recentFilesMenu->addRecentFile( fileName );
     m_lastSaveFileName = fileName;
 
-    //Delete all
-    on_actionNew_triggered();
-
     loadFile( fileName );
 }
 
@@ -286,6 +283,10 @@ void MainWindow::loadFile(const QString & fileName)
         m_recentFilesMenu->removeFile( fileName );
         return;
     }
+
+    //Clear table
+    on_actionNew_triggered();
+
     QXmlStreamReader Rxml;
     file.open(QIODevice::ReadOnly | QFile::Text);
 
