@@ -1,11 +1,11 @@
 # SysexLive
-A sysex sender for two synths
+A sysex sender for two or four synths
 
 ![bildschirmfoto](https://user-images.githubusercontent.com/30245296/36617342-476c56e8-18e7-11e8-9724-d4f4a52c7221.png)
 
 
 ## What is SysexLive
-When playing live with my band, I was always very slow in configuring my synths for the next song. With this tool two synths are configured by just press one shortcut via sysex messages via MIDI. You can open and save setlists.
+When playing live with my band, I was always very slow in configuring my synths for the next song. With this tool two or four synths are configured by just press one shortcut via sysex messages via MIDI. Alternatively you can send MIDI program changes for calling the configuration for all your synths (thanks to @rockumk). You can open and save setlists.
 
 ## Used libraries
 SysexLive uses darkstyle theme from Copyright (c) 2017, Juergen Skrotzky (https://github.com/Jorgen-VikingGod, JorgenVikingGod@gmail.com) and QMidi (which uses rtMidi).
