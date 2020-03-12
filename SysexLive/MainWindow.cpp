@@ -51,6 +51,14 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     ui->tableWidget->hideColumn( 1 );
     ui->tableWidget->hideColumn( 2 );
+    ui->tableWidget->hideColumn( 3 );
+    ui->tableWidget->hideColumn( 4 );
+
+    //Number of synths as group
+    m_actionGroupSynths = new QActionGroup( this );
+    m_actionGroupSynths->setExclusive( true );
+    m_actionGroupSynths->addAction( ui->action2Synths );
+    m_actionGroupSynths->addAction( ui->action4Synths );
 
     //RecentFilesMenu
     m_recentFilesMenu = new QRecentFilesMenu( tr( "Recent Files" ), ui->menuFile );
@@ -79,6 +87,8 @@ void MainWindow::getPorts( void )
     ui->comboBoxInput->addItems( m_midiIn->getPorts() );
     ui->comboBoxSynth1->addItems( m_midiOut->getPorts() );
     ui->comboBoxSynth2->addItems( m_midiOut->getPorts() );
+    ui->comboBoxSynth3->addItems( m_midiOut->getPorts() );
+    ui->comboBoxSynth4->addItems( m_midiOut->getPorts() );
 
     //Block GUI if no port available
     if( ui->comboBoxSynth1->count() == 0 )
@@ -93,9 +103,13 @@ void MainWindow::getPorts( void )
     ui->comboBoxInput->setEnabled( portAvailable );
     ui->comboBoxSynth1->setEnabled( portAvailable );
     ui->comboBoxSynth2->setEnabled( portAvailable );
+    ui->comboBoxSynth3->setEnabled( portAvailable );
+    ui->comboBoxSynth4->setEnabled( portAvailable );
     ui->pushButtonListen->setEnabled( portAvailable );
     ui->labelSynth1->setEnabled( portAvailable );
     ui->labelSynth2->setEnabled( portAvailable );
+    ui->labelSynth3->setEnabled( portAvailable );
+    ui->labelSynth4->setEnabled( portAvailable );
     ui->actionSendPatches->setEnabled( portAvailable );
 }
 
@@ -128,6 +142,24 @@ void MainWindow::searchSynths( void )
         if( ui->comboBoxSynth2->itemText( i ) == m_synth2 )
         {
             ui->comboBoxSynth2->setCurrentIndex( i );
+            break;
+        }
+    }
+
+    for( int i = 0; i < ui->comboBoxSynth3->count(); i++ )
+    {
+        if( ui->comboBoxSynth3->itemText( i ) == m_synth3 )
+        {
+            ui->comboBoxSynth3->setCurrentIndex( i );
+            break;
+        }
+    }
+
+    for( int i = 0; i < ui->comboBoxSynth4->count(); i++ )
+    {
+        if( ui->comboBoxSynth4->itemText( i ) == m_synth4 )
+        {
+            ui->comboBoxSynth4->setCurrentIndex( i );
             break;
         }
     }
@@ -178,7 +210,7 @@ void MainWindow::on_actionAddEntry_triggered()
     for( int i = 0; i < ui->tableWidget->columnCount(); i++ )
     {
         QTableWidgetItem *item = new QTableWidgetItem( "" );
-        if( i > 0 && i < 5 ) item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        if( i > 0 && i < 9 ) item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         ui->tableWidget->setItem( ui->tableWidget->rowCount()-1, i, item );
     }
     ui->plainTextEdit->setEnabled( true );
@@ -193,7 +225,7 @@ void MainWindow::on_actionDeleteEntry_triggered()
 //Doubleclick in table
 void MainWindow::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
-    if( index.column() == 3 || index.column() == 4 )
+    if( index.column() >= 5 && index.column() <= 8 )
     {
         QString path = QFileInfo( m_lastSaveFileName ).absolutePath();
         if( !QDir( path ).exists() ) path = QDir::homePath();
@@ -207,7 +239,7 @@ void MainWindow::on_tableWidget_doubleClicked(const QModelIndex &index)
 
         m_lastSaveFileName = fileName;
 
-        QTableWidgetItem *item = ui->tableWidget->item( index.row(), index.column() - 2 );
+        QTableWidgetItem *item = ui->tableWidget->item( index.row(), index.column() - 4 );
         item->setText( fileName );
         item = ui->tableWidget->item( index.row(), index.column() );
         item->setText( QFileInfo( fileName ).fileName() );
@@ -230,7 +262,7 @@ void MainWindow::on_actionSendPatches_triggered()
         return;
     }
 
-    for( int i = 0; i < 2; i++ )
+    for( int i = 0; i < 4; i++ )
     {
         //Get filename
         QString fileName = ui->tableWidget->item( row, i + 1 )->text();
@@ -256,6 +288,22 @@ void MainWindow::on_actionSendPatches_triggered()
         if( i == 1 && ui->comboBoxSynth2->count() != 0 )
         {
             m_midiOut->openPort( ui->comboBoxSynth2->currentIndex() );
+            std::vector<unsigned char> message( syxData.begin(), syxData.end() );
+            m_midiOut->sendRawMessage( message );
+            m_midiOut->closePort();
+        }
+        //Send to synth 3
+        if( i == 2 && ui->comboBoxSynth3->count() != 0 && ui->action4Synths->isChecked() )
+        {
+            m_midiOut->openPort( ui->comboBoxSynth3->currentIndex() );
+            std::vector<unsigned char> message( syxData.begin(), syxData.end() );
+            m_midiOut->sendRawMessage( message );
+            m_midiOut->closePort();
+        }
+        //Send to synth 4
+        if( i == 3 && ui->comboBoxSynth4->count() != 0 && ui->action4Synths->isChecked() )
+        {
+            m_midiOut->openPort( ui->comboBoxSynth4->currentIndex() );
             std::vector<unsigned char> message( syxData.begin(), syxData.end() );
             m_midiOut->sendRawMessage( message );
             m_midiOut->closePort();
@@ -316,12 +364,29 @@ void MainWindow::loadFile(const QString & fileName)
         if( Rxml.isStartElement() && Rxml.name() == "settings" )
         {
             //Read name string, if there is one
-            if( Rxml.attributes().count() >= 3 )
+            if( ui->action4Synths->isChecked() && Rxml.attributes().count() >= 5 )
+            {
+                m_midiInput = Rxml.attributes().at(0).value().toString();
+                m_synth1 = Rxml.attributes().at(1).value().toString();
+                m_synth2 = Rxml.attributes().at(2).value().toString();
+                m_synth3 = Rxml.attributes().at(3).value().toString();
+                m_synth4 = Rxml.attributes().at(4).value().toString();
+                //qDebug() << "Ports:" << m_midiInput << m_synth1 << m_synth2 << m_synth3 << m_synth4;
+                searchSynths();
+            }
+            else if( ui->action2Synths->isChecked() && Rxml.attributes().count() >= 3 )
             {
                 m_midiInput = Rxml.attributes().at(0).value().toString();
                 m_synth1 = Rxml.attributes().at(1).value().toString();
                 m_synth2 = Rxml.attributes().at(2).value().toString();
                 //qDebug() << "Ports:" << m_midiInput << m_synth1 << m_synth2;
+                searchSynths();
+            }
+            else if( Rxml.attributes().count() >= 2 )
+            {
+                m_synth1 = Rxml.attributes().at(0).value().toString();
+                m_synth2 = Rxml.attributes().at(1).value().toString();
+                //qDebug() << "Ports:" << m_synth1 << m_synth2;
                 searchSynths();
             }
 
@@ -346,20 +411,34 @@ void MainWindow::loadFile(const QString & fileName)
                         {
                             QString fileName = Rxml.readElementText();
                             ui->tableWidget->item( ui->tableWidget->rowCount()-1, 1 )->setText( fileName );
-                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 3 )->setText( QFileInfo( fileName ).fileName() );
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 5 )->setText( QFileInfo( fileName ).fileName() );
                             Rxml.readNext();
                         }
                         else if( Rxml.isStartElement() && Rxml.name() == "synth2" )
                         {
                             QString fileName = Rxml.readElementText();
                             ui->tableWidget->item( ui->tableWidget->rowCount()-1, 2 )->setText( fileName );
-                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 4 )->setText( QFileInfo( fileName ).fileName() );
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 6 )->setText( QFileInfo( fileName ).fileName() );
+                            Rxml.readNext();
+                        }
+                        else if( ui->action4Synths->isChecked() && Rxml.isStartElement() && Rxml.name() == "synth3" )
+                        {
+                            QString fileName = Rxml.readElementText();
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 3 )->setText( fileName );
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 7 )->setText( QFileInfo( fileName ).fileName() );
+                            Rxml.readNext();
+                        }
+                        else if( ui->action4Synths->isChecked() && Rxml.isStartElement() && Rxml.name() == "synth4" )
+                        {
+                            QString fileName = Rxml.readElementText();
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 4 )->setText( fileName );
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 8 )->setText( QFileInfo( fileName ).fileName() );
                             Rxml.readNext();
                         }
                         else if( Rxml.isStartElement() && Rxml.name() == "info" )
                         {
                             QString text = Rxml.readElementText();
-                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 5 )->setText( text );
+                            ui->tableWidget->item( ui->tableWidget->rowCount()-1, 9 )->setText( text );
                             Rxml.readNext();
                         }
                         else if( Rxml.isStartElement() ) //future features
@@ -408,13 +487,23 @@ void MainWindow::on_actionSave_triggered()
     xmlWriter.writeAttribute( "input", m_midiInput );
     xmlWriter.writeAttribute( "port1", m_synth1 );
     xmlWriter.writeAttribute( "port2", m_synth2 );
+    if( ui->action4Synths->isChecked() )
+    {
+        xmlWriter.writeAttribute( "port3", m_synth3 );
+        xmlWriter.writeAttribute( "port4", m_synth4 );
+    }
     for( int i = 0; i < ui->tableWidget->rowCount(); i++ )
     {
         xmlWriter.writeStartElement( "song" );
         xmlWriter.writeAttribute( "name", ui->tableWidget->item(i, 0)->text() );
         xmlWriter.writeTextElement( "synth1", ui->tableWidget->item(i, 1)->text() );
         xmlWriter.writeTextElement( "synth2", ui->tableWidget->item(i, 2)->text() );
-        xmlWriter.writeTextElement( "info", ui->tableWidget->item(i, 5)->text() );
+        if( ui->action4Synths->isChecked() )
+        {
+            xmlWriter.writeTextElement( "synth3", ui->tableWidget->item(i, 3)->text() );
+            xmlWriter.writeTextElement( "synth4", ui->tableWidget->item(i, 4)->text() );
+        }
+        xmlWriter.writeTextElement( "info", ui->tableWidget->item(i, 9)->text() );
         xmlWriter.writeEndElement();
     }
     xmlWriter.writeEndElement();
@@ -440,6 +529,18 @@ void MainWindow::on_comboBoxSynth1_activated(const QString &arg1)
 void MainWindow::on_comboBoxSynth2_activated(const QString &arg1)
 {
     m_synth2 = arg1;
+}
+
+//Actively changed port 3
+void MainWindow::on_comboBoxSynth3_activated(const QString &arg1)
+{
+    m_synth3 = arg1;
+}
+
+//Actively changed port 4
+void MainWindow::on_comboBoxSynth4_activated(const QString &arg1)
+{
+    m_synth4 = arg1;
 }
 
 //Move row up
@@ -484,6 +585,16 @@ void MainWindow::readSettings()
     QFont font = ui->plainTextEdit->font();
     font.setPointSize( set.value( "fontSize", font.pointSize() ).toInt() );
     ui->plainTextEdit->setFont( font );
+    if( set.value( "4Synths", false ).toBool() )
+    {
+        ui->action4Synths->setChecked( true );
+        on_action4Synths_triggered();
+    }
+    else
+    {
+        ui->action2Synths->setChecked( true );
+        on_action2Synths_triggered();
+    }
 }
 
 //Write registry settings
@@ -495,6 +606,7 @@ void MainWindow::writeSettings()
     set.setValue( "lastFileName", m_lastSaveFileName );
     set.setValue( "recentFiles", m_recentFilesMenu->saveState() );
     set.setValue( "fontSize", ui->plainTextEdit->font().pointSize() );
+    set.setValue( "4Synths", ui->action4Synths->isChecked() );
 }
 
 //Take row (for move)
@@ -522,7 +634,7 @@ void MainWindow::on_plainTextEdit_textChanged()
 {
     if( ui->tableWidget->currentRow() >= 0 )
     {
-        ui->tableWidget->item( ui->tableWidget->currentRow(), 5 )->setText( ui->plainTextEdit->toPlainText() );
+        ui->tableWidget->item( ui->tableWidget->currentRow(), 9 )->setText( ui->plainTextEdit->toPlainText() );
     }
     else
     {
@@ -546,7 +658,7 @@ void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentCo
     else
     {
         ui->plainTextEdit->blockSignals( true );
-        ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 5 )->text() );
+        ui->plainTextEdit->setPlainText( ui->tableWidget->item( currentRow, 9 )->text() );
         ui->plainTextEdit->blockSignals( false );
         ui->plainTextEdit->setEnabled( true );
     }
@@ -602,4 +714,26 @@ void MainWindow::onMidiMessageReceive(QMidiMessage *message)
             on_actionSendPatches_triggered();
         }
     }
+}
+
+//Config GUI for 2 synths
+void MainWindow::on_action2Synths_triggered()
+{
+    ui->comboBoxSynth3->setVisible( false );
+    ui->comboBoxSynth4->setVisible( false );
+    ui->labelSynth3->setVisible( false );
+    ui->labelSynth4->setVisible( false );
+    ui->tableWidget->hideColumn( 7 );
+    ui->tableWidget->hideColumn( 8 );
+}
+
+//Config GUI for 4 synths
+void MainWindow::on_action4Synths_triggered()
+{
+    ui->comboBoxSynth3->setVisible( true );
+    ui->comboBoxSynth4->setVisible( true );
+    ui->labelSynth3->setVisible( true );
+    ui->labelSynth4->setVisible( true );
+    ui->tableWidget->showColumn( 7 );
+    ui->tableWidget->showColumn( 8 );
 }

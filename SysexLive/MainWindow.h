@@ -42,6 +42,8 @@ private slots:
     void on_comboBoxInput_activated(const QString &arg1);
     void on_comboBoxSynth1_activated(const QString &arg1);
     void on_comboBoxSynth2_activated(const QString &arg1);
+    void on_comboBoxSynth3_activated(const QString &arg1);
+    void on_comboBoxSynth4_activated(const QString &arg1);
     void on_actionMoveUp_triggered();
     void on_actionMoveDown_triggered();
     void loadFile(const QString &fileName);
@@ -51,6 +53,8 @@ private slots:
     void on_actionZoomTextMinus_triggered();
     void on_pushButtonListen_toggled(bool checked);
     void onMidiMessageReceive(QMidiMessage *message);
+    void on_action2Synths_triggered();
+    void on_action4Synths_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -67,9 +71,12 @@ private:
     QString m_midiInput;
     QString m_synth1;
     QString m_synth2;
+    QString m_synth3;
+    QString m_synth4;
     QMidiIn *m_midiIn;
     QMidiOut *m_midiOut;
     EventReturnFilter *m_eventFilter;
+    QActionGroup *m_actionGroupSynths;
 };
 
 #endif // MAINWINDOW_H
