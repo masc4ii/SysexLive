@@ -16,6 +16,12 @@ QStringList QMidiIn::getPorts()
     }
     return ports;
 }
+
+void QMidiIn::closePort()
+{
+    _midiIn->closePort();
+}
+
 void QMidiIn::openPort(unsigned int index)
 {
     _midiIn->openPort(index);

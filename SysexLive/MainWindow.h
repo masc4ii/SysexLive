@@ -9,6 +9,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "qmidiin.h"
 #include "qmidiout.h"
 #include "qmidimapper.h"
 #include <QTableWidget>
@@ -38,6 +39,7 @@ private slots:
     void on_actionNew_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
+    void on_comboBoxInput_activated(const QString &arg1);
     void on_comboBoxSynth1_activated(const QString &arg1);
     void on_comboBoxSynth2_activated(const QString &arg1);
     void on_actionMoveUp_triggered();
@@ -47,6 +49,8 @@ private slots:
     void on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void on_actionZoomTextPlus_triggered();
     void on_actionZoomTextMinus_triggered();
+    void on_pushButtonListen_toggled(bool checked);
+    void onMidiMessageReceive(QMidiMessage *message);
 
 private:
     Ui::MainWindow *ui;
@@ -60,8 +64,10 @@ private:
 
     QRecentFilesMenu *m_recentFilesMenu;
     QString m_lastSaveFileName;
+    QString m_midiInput;
     QString m_synth1;
     QString m_synth2;
+    QMidiIn *m_midiIn;
     QMidiOut *m_midiOut;
     EventReturnFilter *m_eventFilter;
 };

@@ -17,7 +17,7 @@
 #include "DarkStyle.h"
 
 #define APPNAME "SysexLive"
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 //Constructor
 MainWindow::MainWindow(QWidget *parent) :
@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     CDarkStyle::assign();
 #endif
 
+    m_midiIn = new QMidiIn( this );
     m_midiOut = new QMidiOut( this );
 
     getPorts();
@@ -75,6 +76,7 @@ MainWindow::~MainWindow()
 void MainWindow::getPorts( void )
 {
     bool portAvailable = true;
+    ui->comboBoxInput->addItems( m_midiIn->getPorts() );
     ui->comboBoxSynth1->addItems( m_midiOut->getPorts() );
     ui->comboBoxSynth2->addItems( m_midiOut->getPorts() );
 
@@ -88,8 +90,10 @@ void MainWindow::getPorts( void )
     {
         statusBar()->showMessage( tr( "" ), 0 );
     }
+    ui->comboBoxInput->setEnabled( portAvailable );
     ui->comboBoxSynth1->setEnabled( portAvailable );
     ui->comboBoxSynth2->setEnabled( portAvailable );
+    ui->pushButtonListen->setEnabled( portAvailable );
     ui->labelSynth1->setEnabled( portAvailable );
     ui->labelSynth2->setEnabled( portAvailable );
     ui->actionSendPatches->setEnabled( portAvailable );
@@ -98,6 +102,18 @@ void MainWindow::getPorts( void )
 //Connect ports which were saved in file
 void MainWindow::searchSynths( void )
 {
+    //Close input port, if opened
+    if( ui->pushButtonListen->isChecked() ) ui->pushButtonListen->setChecked( false );
+
+    for( int i = 0; i < ui->comboBoxInput->count(); i++ )
+    {
+        if( ui->comboBoxInput->itemText( i ) == m_midiInput )
+        {
+            ui->comboBoxInput->setCurrentIndex( i );
+            break;
+        }
+    }
+
     for( int i = 0; i < ui->comboBoxSynth1->count(); i++ )
     {
         if( ui->comboBoxSynth1->itemText( i ) == m_synth1 )
@@ -120,6 +136,7 @@ void MainWindow::searchSynths( void )
 //Find the ports
 void MainWindow::on_actionSearchInterfaces_triggered()
 {
+    ui->comboBoxInput->clear();
     ui->comboBoxSynth1->clear();
     ui->comboBoxSynth2->clear();
     getPorts();
@@ -299,11 +316,12 @@ void MainWindow::loadFile(const QString & fileName)
         if( Rxml.isStartElement() && Rxml.name() == "settings" )
         {
             //Read name string, if there is one
-            if( Rxml.attributes().count() >= 2 )
+            if( Rxml.attributes().count() >= 3 )
             {
-                m_synth1 = Rxml.attributes().at(0).value().toString();
-                m_synth2 = Rxml.attributes().at(1).value().toString();
-                //qDebug() << "Ports:" << m_synth1 << m_synth2;
+                m_midiInput = Rxml.attributes().at(0).value().toString();
+                m_synth1 = Rxml.attributes().at(1).value().toString();
+                m_synth2 = Rxml.attributes().at(2).value().toString();
+                //qDebug() << "Ports:" << m_midiInput << m_synth1 << m_synth2;
                 searchSynths();
             }
 
@@ -387,6 +405,7 @@ void MainWindow::on_actionSave_triggered()
     xmlWriter.writeStartDocument();
 
     xmlWriter.writeStartElement( "settings" );
+    xmlWriter.writeAttribute( "input", m_midiInput );
     xmlWriter.writeAttribute( "port1", m_synth1 );
     xmlWriter.writeAttribute( "port2", m_synth2 );
     for( int i = 0; i < ui->tableWidget->rowCount(); i++ )
@@ -403,6 +422,12 @@ void MainWindow::on_actionSave_triggered()
     xmlWriter.writeEndDocument();
 
     file.close();
+}
+
+//Actively changed midi input
+void MainWindow::on_comboBoxInput_activated(const QString &arg1)
+{
+    m_midiInput = arg1;
 }
 
 //Actively changed port 1
@@ -541,4 +566,40 @@ void MainWindow::on_actionZoomTextMinus_triggered()
     QFont font = ui->plainTextEdit->font();
     font.setPointSize( font.pointSize() - 1 );
     ui->plainTextEdit->setFont( font );
+}
+
+//Listen to Midi In for program change
+void MainWindow::on_pushButtonListen_toggled(bool checked)
+{
+    if( checked )
+    {
+        m_midiIn->openPort( ui->comboBoxInput->currentIndex() );
+        connect(m_midiIn, SIGNAL(midiMessageReceived(QMidiMessage*)), this, SLOT(onMidiMessageReceive(QMidiMessage*)));
+        //qDebug() << "Port opened";
+    }
+    else
+    {
+        disconnect(m_midiIn, SIGNAL(midiMessageReceived(QMidiMessage*)), this, SLOT(onMidiMessageReceive(QMidiMessage*)));
+        m_midiIn->closePort();
+        //qDebug() << "Port closed";
+    }
+}
+
+//Get the midi message
+void MainWindow::onMidiMessageReceive(QMidiMessage *message)
+{
+    unsigned int statusType = (message->getStatus());
+    unsigned int programNumber = message->getValue();
+    int theRowCount = ui->tableWidget->rowCount();
+
+    //If program change, select row and send settings
+    if( statusType == 192 )
+    {
+        qDebug() << "Received Program Change on MIDI Channel " << message->getChannel() << programNumber << statusType;
+        if( (int)programNumber < theRowCount )
+        {
+            ui->tableWidget->selectRow( programNumber );
+            on_actionSendPatches_triggered();
+        }
+    }
 }

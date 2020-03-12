@@ -13,6 +13,7 @@ class QMidiIn : public QObject
 public:
     explicit QMidiIn(QObject *parent = 0);
     QStringList getPorts();
+    void closePort();
     void openPort(QString name);
     void openPort(unsigned int index);
     void openVirtualPort(QString name);
