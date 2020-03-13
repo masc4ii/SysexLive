@@ -745,6 +745,8 @@ void MainWindow::on_action4Synths_triggered()
 //Context menu for table
 void MainWindow::on_tableWidget_customContextMenuRequested(const QPoint &pos)
 {
+    if( ui->tableWidget->rowCount() < 1 || ui->tableWidget->currentRow() < 0 ) return;
+
     // Handle global position
     QPoint globalPos = ui->tableWidget->mapToGlobal( pos );
 
