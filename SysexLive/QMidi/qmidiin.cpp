@@ -31,6 +31,7 @@ void QMidiIn::openVirtualPort(QString name)
 {
     _midiIn->openVirtualPort(name.toStdString());
 }
+
 void QMidiIn::openPort(QString name)
 {
     for(unsigned int i = 0; i < _midiIn->getPortCount(); i++)
@@ -42,10 +43,17 @@ void QMidiIn::openPort(QString name)
         }
     }
 }
+
 void QMidiIn::setIgnoreTypes(bool sysex, bool time, bool sense)
 {
     _midiIn->ignoreTypes(sysex, time, sense);
 }
+
+bool QMidiIn::isPortOpen()
+{
+    return _midiIn->isPortOpen();
+}
+
 void QMidiIn::onMidiMessageReceive(QMidiMessage *msg)
 {
     msg->moveToThread(thread());

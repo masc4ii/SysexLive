@@ -20,6 +20,7 @@ public:
     void openPort(unsigned int index);
     void openVirtualPort(QString name);
     void closePort(void);
+    bool isPortOpen();
 private:
     RtMidiOut *_midiOut;
 

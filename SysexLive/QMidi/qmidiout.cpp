@@ -29,6 +29,12 @@ void QMidiOut::closePort()
 {
     _midiOut->closePort();
 }
+
+bool QMidiOut::isPortOpen()
+{
+    return _midiOut->isPortOpen();
+}
+
 void QMidiOut::sendNoteOn(unsigned int channel, unsigned int pitch, unsigned int velocity)
 {
     std::vector<unsigned char> message;
