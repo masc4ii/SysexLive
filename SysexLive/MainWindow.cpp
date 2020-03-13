@@ -77,6 +77,8 @@ MainWindow::~MainWindow()
     writeSettings();
     delete m_eventFilter;
     delete m_midiOut;
+    if( ui->pushButtonListen->isChecked() ) ui->pushButtonListen->setChecked( false );
+    delete m_midiIn;
     delete ui;
 }
 
@@ -171,6 +173,8 @@ void MainWindow::on_actionSearchInterfaces_triggered()
     ui->comboBoxInput->clear();
     ui->comboBoxSynth1->clear();
     ui->comboBoxSynth2->clear();
+    ui->comboBoxSynth3->clear();
+    ui->comboBoxSynth4->clear();
     getPorts();
     searchSynths();
 }
