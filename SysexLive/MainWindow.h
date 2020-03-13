@@ -55,6 +55,7 @@ private slots:
     void onMidiMessageReceive(QMidiMessage *message);
     void on_action2Synths_triggered();
     void on_action4Synths_triggered();
+    void on_tableWidget_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;

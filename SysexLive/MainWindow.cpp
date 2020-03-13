@@ -741,3 +741,22 @@ void MainWindow::on_action4Synths_triggered()
     ui->tableWidget->showColumn( 7 );
     ui->tableWidget->showColumn( 8 );
 }
+
+//Context menu for table
+void MainWindow::on_tableWidget_customContextMenuRequested(const QPoint &pos)
+{
+    // Handle global position
+    QPoint globalPos = ui->tableWidget->mapToGlobal( pos );
+
+    // Create menu and insert some actions
+    QMenu myMenu;
+    myMenu.addAction( ui->actionSendPatches );
+    myMenu.addSeparator();
+    myMenu.addAction( ui->actionMoveUp );
+    myMenu.addAction( ui->actionMoveDown );
+    myMenu.addSeparator();
+    myMenu.addAction( ui->actionDeleteEntry );
+
+    // Show context menu at handling position
+    myMenu.exec( globalPos );
+}
