@@ -281,7 +281,7 @@ void MainWindow::on_actionSendPatches_triggered()
         file.close();
 
         //Send to synth 1
-        if( i == 0 && ui->comboBoxSynth1->count() != 0 )
+        if( i == 0 && ui->comboBoxSynth1->count() != 0 && ui->comboBoxSynth1->currentIndex() < m_midiOut->getPorts().size() )
         {
             m_midiOut->openPort( ui->comboBoxSynth1->currentIndex() );
             std::vector<unsigned char> message( syxData.begin(), syxData.end() );
@@ -289,7 +289,7 @@ void MainWindow::on_actionSendPatches_triggered()
             m_midiOut->closePort();
         }
         //Send to synth 2
-        if( i == 1 && ui->comboBoxSynth2->count() != 0 )
+        if( i == 1 && ui->comboBoxSynth2->count() != 0 && ui->comboBoxSynth2->currentIndex() < m_midiOut->getPorts().size() )
         {
             m_midiOut->openPort( ui->comboBoxSynth2->currentIndex() );
             std::vector<unsigned char> message( syxData.begin(), syxData.end() );
@@ -297,7 +297,7 @@ void MainWindow::on_actionSendPatches_triggered()
             m_midiOut->closePort();
         }
         //Send to synth 3
-        if( i == 2 && ui->comboBoxSynth3->count() != 0 && ui->action4Synths->isChecked() )
+        if( i == 2 && ui->comboBoxSynth3->count() != 0 && ui->action4Synths->isChecked() && ui->comboBoxSynth3->currentIndex() < m_midiOut->getPorts().size() )
         {
             m_midiOut->openPort( ui->comboBoxSynth3->currentIndex() );
             std::vector<unsigned char> message( syxData.begin(), syxData.end() );
@@ -305,7 +305,7 @@ void MainWindow::on_actionSendPatches_triggered()
             m_midiOut->closePort();
         }
         //Send to synth 4
-        if( i == 3 && ui->comboBoxSynth4->count() != 0 && ui->action4Synths->isChecked() )
+        if( i == 3 && ui->comboBoxSynth4->count() != 0 && ui->action4Synths->isChecked() && ui->comboBoxSynth4->currentIndex() < m_midiOut->getPorts().size() )
         {
             m_midiOut->openPort( ui->comboBoxSynth4->currentIndex() );
             std::vector<unsigned char> message( syxData.begin(), syxData.end() );
