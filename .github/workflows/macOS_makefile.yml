@@ -38,7 +38,7 @@ jobs:
     - name: Zip build
       working-directory: ${{ env.SOURCE_DIR }}/build
       run:  |
-            7z a ${{ env.ARTIFACT }} ${{ env.SOURCE_DIR }}/build/* -r
+            7z a ${{ env.ARTIFACT }} ${{ env.SOURCE_DIR }}/build/SysexLive.app -r
             ls -al
 
     - name: Save build artifact
