@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  SOURCE_DIR:   ${{ github.workspace }}
+  QT_VERSION:   5.15.2
+
 jobs:
   build:
 
@@ -44,5 +48,5 @@ jobs:
     - name: Save build artifact
         uses: actions/upload-artifact@master
         with:
-          name: ${{ env.ARTIFACT }}
+          name: SysexLive.zip
           path: ${{ runner.temp }}\${{ env.ARTIFACT }}    
