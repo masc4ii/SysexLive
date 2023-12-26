@@ -32,7 +32,7 @@ jobs:
       run:  |
             /usr/local/Cellar/qt@5/5.15.11/bin/qmake -r ${{ env.SOURCE_DIR }}/SysexLive/SysexLive.pro
             make
-            cd release
+            ls -al
             /usr/local/Cellar/qt@5/5.15.11/bin/macdeployqt SysexLive.app
 
     - name: Zip build
