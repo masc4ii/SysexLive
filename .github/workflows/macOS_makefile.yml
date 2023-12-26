@@ -1,4 +1,4 @@
-name: Makefile CI
+name: macOS Makefile CI
 
 on:
   push:
@@ -35,3 +35,14 @@ jobs:
             make
             cd release
             macdeployqt SysexLive.app
+
+    - name: Zip build
+      working-directory: ${{ runner.temp }}
+      run:  |
+            7z a SysexLive.zip ${{ runner.temp }}\build\* -r
+              
+    - name: Save build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ env.ARTIFACT }}
+          path: ${{ runner.temp }}\${{ env.ARTIFACT }}    
