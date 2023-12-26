@@ -30,10 +30,10 @@ jobs:
     - name: Build
       working-directory: ${{ env.SOURCE_DIR }}/build
       run:  |
-            qmake -r ${{ env.SOURCE_DIR }}/SysexLive/SysexLive.pro
+            /usr/local/Cellar/qt@5/5.15.11/bin/qmake -r ${{ env.SOURCE_DIR }}/SysexLive/SysexLive.pro
             make
             cd release
-            macdeployqt SysexLive.app
+            /usr/local/Cellar/qt@5/5.15.11/bin/macdeployqt SysexLive.app
 
     - name: Zip build
       working-directory: ${{ runner.temp }}
