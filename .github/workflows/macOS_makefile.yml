@@ -47,7 +47,7 @@ jobs:
             7z a SysexLiveMacOS.zip ${{ runner.temp }}\build\* -r
 
     - name: Save build artifact
-      uses: actions/upload-artifact@4
+      uses: actions/upload-artifact@master
       with:
         name: ${{ env.ARTIFACT }}
         path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT }}
