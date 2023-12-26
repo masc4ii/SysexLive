@@ -38,7 +38,8 @@ jobs:
     - name: Zip build
       working-directory: ${{ runner.temp }}
       run:  |
-            7z a SysexLiveMacOS.zip ${{ runner.temp }}\build\* -r
+            7z a SysexLiveMacOS.zip ${{ runner.temp }}/build/* -r
+            ls -al
 
     - name: Save build artifact
       uses: actions/upload-artifact@master
