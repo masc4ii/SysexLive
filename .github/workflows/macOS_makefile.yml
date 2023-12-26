@@ -20,15 +20,12 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3.3.0
+      uses: WillBrennan/yaqti@2021.07.29
       with:
         version:      ${{ env.QT_VERSION }}
-        host:         mac
-        target:       desktop
-        arch:         x86_64
-        dir:          ${{ runner.temp }}
+        os:           mac
+        platform:     desktop
         modules:      qtmultimedia
-        setup-python: false
               
     - name: Create build directory
       run:  mkdir ${{ env.SOURCE_DIR }}/build
