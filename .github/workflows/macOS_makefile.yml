@@ -44,9 +44,3 @@ jobs:
       working-directory: ${{ runner.temp }}
       run:  |
             7z a SysexLive.zip ${{ runner.temp }}\build\* -r
-              
-    - name: Save build artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: SysexLive.zip
-          path: ${{ runner.temp }}\${{ env.ARTIFACT }}    
