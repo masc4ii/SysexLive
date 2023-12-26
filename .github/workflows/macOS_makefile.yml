@@ -9,7 +9,7 @@ on:
 env:
   SOURCE_DIR:   ${{ github.workspace }}
   QT_VERSION:   5.15.2
-  ARTIFACT:     SysexLiveMacOs.zip
+  ARTIFACT:     SysexLiveMacOS.zip
 
 jobs:
   build:
@@ -44,11 +44,10 @@ jobs:
     - name: Zip build
       working-directory: ${{ runner.temp }}
       run:  |
-            7z a SysexLiveMacOs.zip ${{ runner.temp }}\build\* -r
+            7z a SysexLiveMacOS.zip ${{ runner.temp }}\build\* -r
 
     - name: MacOS artefact
-        uses: actions/upload-pages-artifact@v3.0.0
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT }}
-          retention-days: 14
