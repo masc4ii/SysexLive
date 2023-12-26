@@ -20,14 +20,9 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3.3.0
+      uses: ConorMacBride/install-package@v1.1.0
       with:
-        version:      ${{ env.QT_VERSION }}
-        host:         mac
-        target:       desktop
-        dir:          ${{ runner.temp }}
-        modules:      qtmultimedia
-        setup-python: false
+        brew: qt5
               
     - name: Create build directory
       run:  mkdir ${{ env.SOURCE_DIR }}/build
