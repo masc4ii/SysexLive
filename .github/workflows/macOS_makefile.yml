@@ -1,4 +1,4 @@
-name: macOS Makefile CI
+name: macOS Release
 
 on:
   push:
@@ -46,8 +46,8 @@ jobs:
       run:  |
             7z a SysexLiveMacOS.zip ${{ runner.temp }}\build\* -r
 
-    - name: MacOS artefact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT }}
-          path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT }}
+    - name: Save build artifact
+      uses: actions/upload-artifact@4
+      with:
+        name: ${{ env.ARTIFACT }}
+        path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT }}
