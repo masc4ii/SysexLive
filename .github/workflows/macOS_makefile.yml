@@ -47,7 +47,8 @@ jobs:
             7z a SysexLiveMacOs.zip ${{ runner.temp }}\build\* -r
 
     - name: MacOS artefact
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-pages-artifact@v3.0.0
         with:
           name: ${{ env.ARTIFACT }}
           path: ${{ env.SOURCE_DIR }}/build/${{ env.ARTIFACT }}
+          retention-days: 14
